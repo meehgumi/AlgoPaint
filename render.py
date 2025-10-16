@@ -30,7 +30,7 @@ class Forme(ABC):
         pass
 
 # Exemple d'intégration avec Rectangle
-from rectangle import Rectangle
+from formes import Rectangle
 
 class RectangleForme(Forme):
     """
@@ -62,9 +62,8 @@ class RectangleForme(Forme):
         return f"RectangleForme({repr(self.rect)})"
     
     def add_rectangle(self, rect: Rectangle) -> None:
-    """Ajoute un rectangle à la liste."""
-    rect.clamp_to_canvas(self.width, self.height)
-    self.rectangles.append(rect)
+        rect.clamp_to_canvas(self.width, self.height)
+        self.rectangles.append(rect)
 
 def clear(self) -> None:
     """Efface tous les rectangles."""
