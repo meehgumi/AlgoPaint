@@ -27,7 +27,7 @@ class Forme(ABC):
     @classmethod
     @abstractmethod
     def from_dict(cls, d: Dict[str, Any]) -> "Forme":
-        pass
+        pa
 
 # Exemple d'intégration avec Rectangle
 from rectangle import Rectangle
