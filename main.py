@@ -44,11 +44,45 @@ def main():
     src_path = os.path.join(image_dir, chosen_image)
     print(f"\nImage choisie : {chosen_image}")
 
+    # Proposer des formes disponibles
+    shapes = {
+        "1": "rectangle",
+        "2": "triangle",
+        "3": "circle"
+    }
+    
+    shape_names = {
+        "rectangle": "Rectangle",
+        "triangle": "Triangle",
+        "circle": "Cercle"
+    }
+
+    print("\n=== Formes disponibles ===")
+    print("1. Rectangle")
+    print("2. Triangle")
+    print("3. Cercle")
+    print("==========================\n")
+
+    # Demander à l'utilisateur de choisir une forme
+    chosen_shape = "rectangle"
+    while True:
+        try:
+            shape_choice = input(f"Choisissez une forme (1-{len(shapes)}) : ")
+            if shape_choice in shapes:
+                chosen_shape = shapes[shape_choice]
+                print(f"\nForme choisie : {shape_names[chosen_shape]}")
+                break
+            else:
+                print(f"Veuillez entrer un nombre entre 1 et {len(shapes)}")
+        except KeyboardInterrupt:
+            print("\nOpération annulée.")
+            return
+
     rects = image_to_color_rects(src_path, grid_cols=16, grid_rows=16)
     src = load_image_to_array(src_path)
     h, w, _ = src.shape
 
-    img_out = reconstruct_grid_image(rects, w, h)
+    img_out = reconstruct_grid_image(rects, w, h, shape=chosen_shape)
     output_dir = "resultat"
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "sortie.png")
