@@ -8,19 +8,19 @@ except Exception as exc:
     ) from exc
 
 import numpy as np
-from formes import create_forme
+from shapes import create_shape
 
 
 def render_image(rects, width, height, shape="rectangle"):
     """
-    Rend une image à partir d'une liste de rectangles de grille avec différentes formes.
-    Les formes se chevauchent pour recréer l'image originale.
+    Rend une image à partir d'une liste de rectangles de grille avec différentes shapes.
+    Les shapes se chevauchent pour recréer l'image originale.
     
     Args:
         rects: Liste de dictionnaires contenant les rectangles avec leurs couleurs
         width: Largeur de l'image finale
         height: Hauteur de l'image finale
-        shape: Forme à utiliser ("rectangle", "triangle", "circle")
+        shape: Shape à utiliser ("rectangle", "triangle", "circle")
     
     Returns:
         Image PIL RGB
@@ -53,7 +53,7 @@ def render_image(rects, width, height, shape="rectangle"):
     canvas = np.zeros((height, width, 3), dtype=np.float32)
     weight_map = np.zeros((height, width), dtype=np.float32)
     
-    forme = create_forme(shape)
+    shape_obj = create_shape(shape)
 
     for r in rects:
         row = r["row"]
@@ -72,7 +72,7 @@ def render_image(rects, width, height, shape="rectangle"):
         cell_w = right - left
         cell_h = bottom - top
         
-        mask = forme.create_mask(width, height, center_x, center_y, cell_w, cell_h, row)
+        mask = shape_obj.create_mask(width, height, center_x, center_y, cell_w, cell_h, row)
         
         for c in range(3):
             canvas[:, :, c] += mask * color[c]

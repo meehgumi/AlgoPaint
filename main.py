@@ -44,7 +44,7 @@ def main():
     src_path = os.path.join(image_dir, chosen_image)
     print(f"\nImage choisie : {chosen_image}")
 
-    # Proposer des formes disponibles
+    # Proposer des shapes disponibles
     shapes = {
         "1": "rectangle",
         "2": "triangle",
@@ -57,20 +57,20 @@ def main():
         "circle": "Cercle"
     }
 
-    print("\n=== Formes disponibles ===")
+    print("\n=== Shapes disponibles ===")
     print("1. Rectangle")
     print("2. Triangle")
     print("3. Cercle")
     print("==========================\n")
 
-    # Demander à l'utilisateur de choisir une forme
+    # Demander à l'utilisateur de choisir une shape
     chosen_shape = "rectangle"
     while True:
         try:
-            shape_choice = input(f"Choisissez une forme (1-{len(shapes)}) : ")
+            shape_choice = input(f"Choisissez une shape (1-{len(shapes)}) : ")
             if shape_choice in shapes:
                 chosen_shape = shapes[shape_choice]
-                print(f"\nForme choisie : {shape_names[chosen_shape]}")
+                print(f"\nShape choisie : {shape_names[chosen_shape]}")
                 break
             else:
                 print(f"Veuillez entrer un nombre entre 1 et {len(shapes)}")

@@ -4,9 +4,9 @@ from PIL import Image, ImageDraw
 import numpy as np
 
 
-class Forme(ABC):
+class Shape(ABC):
     """
-    Classe abstraite pour une forme dessinable sur une image.
+    Classe abstraite pour une shape dessinable sur une image.
     """
 
     @abstractmethod
@@ -21,11 +21,11 @@ class Forme(ABC):
         row: int = 0,
     ) -> np.ndarray:
         """
-        Crée un masque numpy (0-1) pour cette forme.
+        Crée un masque numpy (0-1) pour cette shape.
 
         Args:
             width, height: dimensions de l'image
-            center_x, center_y: centre de la forme
+            center_x, center_y: centre de la shape
             cell_w, cell_h: dimensions de la cellule
             row: numéro de ligne (pour ajustements spécifiques)
 
@@ -40,12 +40,12 @@ class Forme(ABC):
 
     @classmethod
     @abstractmethod
-    def from_dict(cls, d: Dict[str, Any]) -> "Forme":
+    def from_dict(cls, d: Dict[str, Any]) -> "Shape":
         pass
 
 
-class RectangleForme(Forme):
-    """Forme rectangulaire."""
+class RectangleShape(Shape):
+    """Shape rectangulaire."""
 
     def __init__(self, overlap: float = 1.0):
         self.overlap = overlap
@@ -83,12 +83,12 @@ class RectangleForme(Forme):
         return {"type": "rectangle", "overlap": self.overlap}
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> "RectangleForme":
+    def from_dict(cls, d: Dict[str, Any]) -> "RectangleShape":
         return cls(overlap=d.get("overlap", 1.0))
 
 
-class TriangleForme(Forme):
-    """Forme triangulaire."""
+class TriangleShape(Shape):
+    """Shape triangulaire."""
 
     def __init__(self, size_multiplier: float = 3.5, first_row_multiplier: float = 4.5):
         self.size_multiplier = size_multiplier
@@ -130,15 +130,15 @@ class TriangleForme(Forme):
         }
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> "TriangleForme":
+    def from_dict(cls, d: Dict[str, Any]) -> "TriangleShape":
         return cls(
             size_multiplier=d.get("size_multiplier", 3.5),
             first_row_multiplier=d.get("first_row_multiplier", 4.5),
         )
 
 
-class CircleForme(Forme):
-    """Forme circulaire."""
+class CircleShape(Shape):
+    """Shape circulaire."""
 
     def __init__(self, radius_multiplier: float = 1.2):
         self.radius_multiplier = radius_multiplier
@@ -173,20 +173,20 @@ class CircleForme(Forme):
         return {"type": "circle", "radius_multiplier": self.radius_multiplier}
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> "CircleForme":
+    def from_dict(cls, d: Dict[str, Any]) -> "CircleShape":
         return cls(radius_multiplier=d.get("radius_multiplier", 1.2))
 
 
-def create_forme(shape_type: str) -> Forme:
-    """Factory pour créer une forme à partir de son type."""
+def create_shape(shape_type: str) -> Shape:
+    """Factory pour créer une shape à partir de son type."""
     if shape_type == "rectangle":
-        return RectangleForme()
+        return RectangleShape()
     elif shape_type == "triangle":
-        return TriangleForme()
+        return TriangleShape()
     elif shape_type == "circle":
-        return CircleForme()
+        return CircleShape()
     else:
-        raise ValueError(f"Type de forme inconnu: {shape_type}")
+        raise ValueError(f"Type de shape inconnu: {shape_type}")
 
 
-__all__ = ["Forme", "RectangleForme", "TriangleForme", "CircleForme", "create_forme"]
+__all__ = ["Shape", "RectangleShape", "TriangleShape", "CircleShape", "create_shape"]
