@@ -47,9 +47,9 @@ python main.py
 1- Choisir une image dans le dossier images
 
 2- Choisir une forme :  
-    1 → Rectangle  
-    2 → Triangle  
-    3 → Cercle  
+        1 = Rectangle  
+        2 = Triangle  
+        3 = Cercle  
 
 3-Générer une reconstruction basée sur les couleurs moyennes
 
