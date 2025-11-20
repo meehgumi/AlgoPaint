@@ -1,111 +1,99 @@
-from abc import ABC, abstractmethod
-from typing import Tuple, Dict, Any
-from PIL import Image
+"""Module pour le rendu et l'affichage des images générées."""
+
+try:
+    from PIL import Image
+except Exception as exc:
+    raise RuntimeError(
+        "Pillow (PIL) n'est pas installé. Installez-le avec 'pip install Pillow'."
+    ) from exc
+
 import numpy as np
+from formes import create_forme
 
-class Forme(ABC):
+
+def render_image(rects, width, height, shape="rectangle"):
     """
-    Classe abstraite pour une forme dessinable sur une image.
-    """
-
-    @abstractmethod
-    def draw_on(self, base_image: Image.Image, blend: bool = True) -> Image.Image:
-        pass
-
-    @abstractmethod
-    def apply_to_array(self, arr: np.ndarray) -> np.ndarray:
-        pass
-
-    @abstractmethod
-    def mutate(self, img_width: int, img_height: int) -> None:
-        pass
-
-    @abstractmethod
-    def to_dict(self) -> Dict[str, Any]:
-        pass
-
-    @classmethod
-    @abstractmethod
-    def from_dict(cls, d: Dict[str, Any]) -> "Forme":
-        pass
-
-# Exemple d'intégration avec Rectangle
-from formes import Rectangle
-
-class RectangleForme(Forme):
-    """
-    Adaptateur pour utiliser Rectangle comme une Forme générique.
-    """
-    def __init__(self, rect: Rectangle):
-        self.rect = rect
-
-    def draw_on(self, base_image: Image.Image, blend: bool = True) -> Image.Image:
-        return self.rect.draw_on(base_image, blend)
-
-    def apply_to_array(self, arr: np.ndarray) -> np.ndarray:
-        return self.rect.apply_to_array(arr)
-
-    def mutate(self, img_width: int, img_height: int) -> None:
-        self.rect.mutate(img_width, img_height)
-
-    def to_dict(self) -> Dict[str, Any]:
-        d = self.rect.to_dict()
-        d["type"] = "rectangle"
-        return d
-
-    @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> "RectangleForme":
-        rect = Rectangle.from_dict(d)
-        return cls(rect)
-
-    def __repr__(self):
-        return f"RectangleForme({repr(self.rect)})"
+    Rend une image à partir d'une liste de rectangles de grille avec différentes formes.
+    Les formes se chevauchent pour recréer l'image originale.
     
-    def add_rectangle(self, rect: Rectangle) -> None:
-        rect.clamp_to_canvas(self.width, self.height)
-        self.rectangles.append(rect)
-
-def clear(self) -> None:
-    """Efface tous les rectangles."""
-    self.rectangles.clear()
-
-def render(self, to_array: bool = False, base_image: Optional[Image.Image] = None) -> Image.Image | np.ndarray:
+    Args:
+        rects: Liste de dictionnaires contenant les rectangles avec leurs couleurs
+        width: Largeur de l'image finale
+        height: Hauteur de l'image finale
+        shape: Forme à utiliser ("rectangle", "triangle", "circle")
+    
+    Returns:
+        Image PIL RGB
     """
-    Construit l'image finale à partir des rectangles.
-    - to_array=True : retourne un tableau numpy (HxWx4)
-    - base_image : image RGBA servant de fond au lieu d'une couleur unie
-    """
-    # Créer le fond
-    if base_image is not None:
-        img = base_image.convert("RGBA").copy()
-    else:
-        img = Image.new("RGBA", (self.width, self.height), self.background)
+    if not rects:
+        return Image.new("RGB", (width, height), (0, 0, 0))
 
-    # Dessiner chaque rectangle dans l'ordre
-    for rect in self.rectangles:
-        img = rect.draw_on(img, blend=True)
+    grid_rows = max(r["row"] for r in rects) + 1
+    grid_cols = max(r["col"] for r in rects) + 1
 
-    if to_array:
-        return np.array(img, dtype=np.uint8)
-    return img
+    col_widths = [0] * grid_cols
+    row_heights = [0] * grid_rows
+    for r in rects:
+        c = r["col"]
+        rw = r["cell_width"]
+        if rw > col_widths[c]:
+            col_widths[c] = rw
+        rr = r["row"]
+        rh = r["cell_height"]
+        if rh > row_heights[rr]:
+            row_heights[rr] = rh
 
-def fitness(self, target_img: Image.Image) -> float:
-    """
-    Calcule la 'distance' entre l'image rendue et une image cible.
-    Retourne la MSE (Mean Squared Error) entre les pixels.
-    """
-    render_arr = np.array(self.render(to_array=True), dtype=np.float32)
-    target_arr = np.array(target_img.resize((self.width, self.height)).convert("RGBA"), dtype=np.float32)
-    mse = np.mean((render_arr - target_arr) ** 2)
-    return mse
+    x_offsets = [0] * (grid_cols + 1)
+    y_offsets = [0] * (grid_rows + 1)
+    for i in range(grid_cols):
+        x_offsets[i + 1] = x_offsets[i] + col_widths[i]
+    for j in range(grid_rows):
+        y_offsets[j + 1] = y_offsets[j] + row_heights[j]
 
-def copy(self) -> Canvas:
-    """Crée une copie indépendante du canvas."""
-    new_canvas = Canvas(self.width, self.height, self.background)
-    new_canvas.rectangles = [r.copy() for r in self.rectangles]
-    return new_canvas
+    canvas = np.zeros((height, width, 3), dtype=np.float32)
+    weight_map = np.zeros((height, width), dtype=np.float32)
+    
+    forme = create_forme(shape)
 
-def __repr__(self):
-    return f"<Canvas {self.width}x{self.height} avec {len(self.rectangles)} rectangles>"
+    for r in rects:
+        row = r["row"]
+        col = r["col"]
+        color = np.array(r["color"], dtype=np.float32)
+        left = x_offsets[col]
+        top = y_offsets[row]
+        right = min(width, left + r["cell_width"])
+        bottom = min(height, top + r["cell_height"])
+        
+        if right <= left or bottom <= top:
+            continue
+        
+        center_x = (left + right) / 2.0
+        center_y = (top + bottom) / 2.0
+        cell_w = right - left
+        cell_h = bottom - top
+        
+        mask = forme.create_mask(width, height, center_x, center_y, cell_w, cell_h, row)
+        
+        for c in range(3):
+            canvas[:, :, c] += mask * color[c]
+        weight_map += mask
+
+    weight_map = np.maximum(weight_map, 1e-6)
+    for c in range(3):
+        canvas[:, :, c] /= weight_map
+    
+    canvas = np.clip(canvas, 0, 255).astype(np.uint8)
+    return Image.fromarray(canvas, mode="RGB")
 
 
+def show_image(img: Image.Image) -> None:
+    """Affiche l'image via le visualiseur par défaut du système."""
+    img.show()
+
+
+def save_image(img: Image.Image, path: str) -> None:
+    """Enregistre l'image au chemin donné."""
+    img.save(path)
+
+
+__all__ = ["render_image", "show_image", "save_image"]

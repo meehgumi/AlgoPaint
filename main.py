@@ -1,5 +1,5 @@
 from image_processor import image_to_color_rects, load_image_to_array, compute_mse
-from canvas import reconstruct_grid_image
+from render import render_image, save_image
 import numpy as np
 import os
 
@@ -82,11 +82,11 @@ def main():
     src = load_image_to_array(src_path)
     h, w, _ = src.shape
 
-    img_out = reconstruct_grid_image(rects, w, h, shape=chosen_shape)
+    img_out = render_image(rects, w, h, shape=chosen_shape)
     output_dir = "resultat"
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "sortie.png")
-    img_out.save(output_path)
+    save_image(img_out, output_path)
 
     mse = compute_mse(src, np.array(img_out))
     print("Image enregistrée :", output_path)
