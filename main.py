@@ -50,19 +50,25 @@ def main():
     shapes = {
         "1": "rectangle",
         "2": "triangle",
-        "3": "circle"
+        "3": "circle" ,
+        "4": "diamond",
+        "5": "star"
     }
     
     shape_names = {
         "rectangle": "Rectangle",
         "triangle": "Triangle",
-        "circle": "Cercle"
+        "circle": "Cercle",
+        "diamond": "Losange",
+        "star": "Etoile"
     }
 
     print("\n=== Formes disponibles ===")
     print("1. Rectangle")
     print("2. Triangle")
     print("3. Cercle")
+    print("4. Losange")
+    print("5. Etoile")
     print("==========================\n")
 
     # Demander à l'utilisateur de choisir une forme
