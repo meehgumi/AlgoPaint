@@ -34,16 +34,48 @@ def _compute_grid_from_limit(max_rectangles, width, height):
         return 16, 16
     # Calcul du ratio pour respecter les proportions de l'image
     ratio = width / float(height) if height else 1.0
-    cols = max(1, int(round(math.sqrt(max_rectangles * ratio))))
-    rows = max(1, max_rectangles // cols)
-    # Ajustement pour ne pas dépasser le max
-    while cols * rows > max_rectangles and rows > 1:
-        rows -= 1
-    if cols * rows > max_rectangles and cols > 1:
-        cols = max(1, max_rectangles // rows)
-    cols = max(1, cols)
-    rows = max(1, rows)
-    return cols, rows
+    
+    # Trouver d'abord les combinaisons qui donnent exactement max_rectangles
+    exact_solutions = []
+    for test_cols in range(1, max_rectangles + 1):
+        if max_rectangles % test_cols == 0:
+            test_rows = max_rectangles // test_cols
+            exact_solutions.append((test_cols, test_rows))
+    
+    # Si on a des solutions exactes, choisir celle avec le meilleur ratio
+    if exact_solutions:
+        best_cols, best_rows = exact_solutions[0]
+        best_ratio_diff = abs(best_cols / float(best_rows) - ratio)
+        
+        for cols, rows in exact_solutions:
+            ratio_diff = abs(cols / float(rows) - ratio)
+            if ratio_diff < best_ratio_diff:
+                best_cols = cols
+                best_rows = rows
+                best_ratio_diff = ratio_diff
+        return best_cols, best_rows
+    
+    # Sinon, trouver la combinaison la plus proche en dessous
+    best_cols = 1
+    best_rows = 1
+    best_total = 1
+    
+    for test_cols in range(1, max_rectangles + 1):
+        test_rows = max(1, max_rectangles // test_cols)
+        total = test_cols * test_rows
+        if total <= max_rectangles and total > best_total:
+            best_cols = test_cols
+            best_rows = test_rows
+            best_total = total
+        # Essayer aussi avec rows ajusté pour être plus proche
+        test_rows_plus = test_rows + 1
+        total_plus = test_cols * test_rows_plus
+        if total_plus <= max_rectangles and total_plus > best_total:
+            best_cols = test_cols
+            best_rows = test_rows_plus
+            best_total = total_plus
+    
+    return best_cols, best_rows
 
 
 def image_to_color_rects(path, grid_cols=16, grid_rows=16, max_rectangles=None):
