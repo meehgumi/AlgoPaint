@@ -1,4 +1,4 @@
-from image_processor import image_to_color_rects, load_image_to_array, compute_mse
+from image_processor import image_to_color_rects, load_image_to_array, compute_mse, apply_grayscale
 from render import render_image, save_image
 import numpy as np
 import os
@@ -45,6 +45,15 @@ def main():
 
     src_path = os.path.join(image_dir, chosen_image)
     print(f"\nImage choisie : {chosen_image}")
+
+    src = load_image_to_array(src_path)
+
+    # Choix du filtre
+    print("\n Options de Filtre")
+    filter_choice = input("Appliquer le filtre Noir et Blanc ? (y/n) : ").strip().lower()
+    if filter_choice == 'y': 
+        src = apply_grayscale(src)
+        print("Filtre Noir et Blanc appliqué.")
 
     # Proposer des shapes disponibles
     shapes = {
@@ -108,13 +117,12 @@ def main():
 
     # Génération de la grille selon le nombre de formes ou automatique 
     if max_rectangles is not None:
-        rects = image_to_color_rects(src_path, max_rectangles=max_rectangles)
+        rects = image_to_color_rects(src_path, max_rectangles=max_rectangles, src_img=src)
         print(f"Grille générée : {len(rects)} formes")
     else:
-        rects = image_to_color_rects(src_path, grid_cols=16, grid_rows=16)
+        rects = image_to_color_rects(src_path, grid_cols=16, grid_rows=16, src_img=src)
         print(f"Grille générée : {len(rects)} formes (16x16)")
     
-    src = load_image_to_array(src_path)
     h, w, _ = src.shape
 
     img_out = render_image(rects, w, h, shape=chosen_shape)
