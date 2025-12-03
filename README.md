@@ -35,13 +35,17 @@ pip install Pillow numpy
   - **Rectangles**
   - **Triangles**
   - **Cercles**
-- Découpage en grille (par défaut 16×16)
+- Choix du nombre de formes à utiliser :
+  - Nombre spécifique (ex: 100, 5, 50)
+  - Mode automatique (grille 16×16 = 256 formes)
+- Découpage en grille adaptatif selon le nombre choisi
 - Calcul automatique de la couleur moyenne par cellule
 - Fusion des shapes avec PIL et NumPy
 - Calcul de l'erreur **MSE** (Mean Squared Error)
 - Interface console simple pour sélectionner :
   - l'image source
   - la shape de reconstruction
+  - le nombre de formes
 
 ## 🎮 Utilisation
 
@@ -57,9 +61,14 @@ python3 main.py
    - `1` = Rectangle
    - `2` = Triangle
    - `3` = Cercle
-3. **Générer une reconstruction** basée sur les couleurs moyennes
-4. **Sauvegarder le résultat** automatiquement dans `resultat/sortie.png`
-5. **Afficher la MSE** entre l'image originale et la reconstruction
+3. **Choisir le nombre de formes** :
+   - Entrer un nombre (ex: `100`, `5`, `50`) pour un nombre spécifique
+   - Entrer `auto` pour utiliser la grille automatique (16×16 = 256 formes)
+4. **Générer une reconstruction** basée sur les couleurs moyennes
+5. **Sauvegarder le résultat** automatiquement dans `resultat/sortie.png`
+6. **Afficher la MSE** entre l'image originale et la reconstruction
+
+**Note :** Le programme affiche le nombre réel de formes générées. Si vous demandez un nombre qui ne peut pas être exactement atteint (ex: 7), le programme utilisera la combinaison la plus proche possible (ex: 6 formes).
 
 ## ⚙️ Fonctionnement
 
@@ -82,7 +91,10 @@ python3 main.py
 - Découpage en grille (`image_to_color_rects`)
 - Calcul des couleurs moyennes
 - Calcul de l'erreur MSE (`compute_mse`)
-- Définition dynamique de la grille (`_compute_grid_from_limit`)
+- Définition dynamique de la grille (`_compute_grid_from_limit`) :
+  - Calcule les dimensions optimales (colonnes × lignes) pour un nombre donné
+  - Respecte le ratio de l'image
+  - Priorise les combinaisons exactes quand possible
 
 ### `render.py`
 - Dessin et superposition des shapes géométriques
@@ -91,7 +103,8 @@ python3 main.py
 
 ### `main.py`
 - Menu interactif console
-- Gestion du choix de l'image et de la shape
-- Reconstruction
+- Gestion du choix de l'image, de la forme et du nombre de formes
+- Reconstruction avec le nombre de formes choisi
+- Affichage du nombre réel de formes générées
 - Calcul de la MSE
 - Sauvegarde dans `resultat/sortie.png`
