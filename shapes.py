@@ -5,9 +5,7 @@ import numpy as np
 
 
 class Shape(ABC):
-    """
-    Classe abstraite pour une shape dessinable sur une image.
-    """
+    """Classe abstraite pour une forme dessinable sur une image."""
 
     @abstractmethod
     def create_mask(
@@ -20,18 +18,7 @@ class Shape(ABC):
         cell_h: float,
         row: int = 0,
     ) -> np.ndarray:
-        """
-        Crée un masque numpy (0-1) pour cette shape.
-
-        Args:
-            width, height: dimensions de l'image
-            center_x, center_y: centre de la shape
-            cell_w, cell_h: dimensions de la cellule
-            row: numéro de ligne (pour ajustements spécifiques)
-
-        Returns:
-            Masque numpy de shape (height, width) avec valeurs entre 0 et 1
-        """
+        """Crée un masque numpy (0-1) pour cette forme."""
         pass
 
     @abstractmethod
@@ -45,7 +32,7 @@ class Shape(ABC):
 
 
 class RectangleShape(Shape):
-    """Shape rectangulaire."""
+    """Forme rectangulaire."""
 
     def __init__(self, overlap: float = 1.0):
         self.overlap = overlap
@@ -60,14 +47,17 @@ class RectangleShape(Shape):
         cell_h: float,
         row: int = 0,
     ) -> np.ndarray:
+        """Crée un masque rectangulaire."""
         shape_img = Image.new("L", (width, height), 0)
         shape_draw = ImageDraw.Draw(shape_img)
 
+        # Calcul des dimensions avec overlap
         expand_w = cell_w * self.overlap
         expand_h = cell_h * self.overlap
         left = center_x - cell_w / 2
         top = center_y - cell_h / 2
 
+        # Calcul des coordonnées du rectangle
         shape_left = max(0, left - expand_w / 2)
         shape_top = max(0, top - expand_h / 2)
         shape_right = min(width, left + cell_w / 2 + expand_w / 2)
@@ -88,7 +78,7 @@ class RectangleShape(Shape):
 
 
 class TriangleShape(Shape):
-    """Shape triangulaire."""
+    """Forme triangulaire."""
 
     def __init__(self, size_multiplier: float = 3.5, first_row_multiplier: float = 4.5):
         self.size_multiplier = size_multiplier
@@ -104,13 +94,16 @@ class TriangleShape(Shape):
         cell_h: float,
         row: int = 0,
     ) -> np.ndarray:
+        """Crée un masque triangulaire."""
         shape_img = Image.new("L", (width, height), 0)
         shape_draw = ImageDraw.Draw(shape_img)
 
+        # Calcul de la taille du triangle
         triangle_size = max(cell_w, cell_h) * self.size_multiplier
         if row == 0:
             triangle_size = max(cell_w, cell_h) * self.first_row_multiplier
 
+        # Calcul des trois points du triangle
         x1 = center_x
         y1 = center_y - triangle_size / 2
         x2 = center_x - triangle_size / 2
@@ -138,7 +131,7 @@ class TriangleShape(Shape):
 
 
 class CircleShape(Shape):
-    """Shape circulaire."""
+    """Forme circulaire."""
 
     def __init__(self, radius_multiplier: float = 1.2):
         self.radius_multiplier = radius_multiplier
@@ -153,9 +146,11 @@ class CircleShape(Shape):
         cell_h: float,
         row: int = 0,
     ) -> np.ndarray:
+        """Crée un masque circulaire."""
         shape_img = Image.new("L", (width, height), 0)
         shape_draw = ImageDraw.Draw(shape_img)
 
+        # Calcul du rayon du cercle
         radius = max(cell_w, cell_h) * self.radius_multiplier
         shape_draw.ellipse(
             [
@@ -178,7 +173,7 @@ class CircleShape(Shape):
 
 
 def create_shape(shape_type: str) -> Shape:
-    """Factory pour créer une shape à partir de son type."""
+    """Crée une forme à partir de son type."""
     if shape_type == "rectangle":
         return RectangleShape()
     elif shape_type == "triangle":
@@ -186,7 +181,7 @@ def create_shape(shape_type: str) -> Shape:
     elif shape_type == "circle":
         return CircleShape()
     else:
-        raise ValueError(f"Type de shape inconnu: {shape_type}")
+        raise ValueError(f"Type de forme inconnu: {shape_type}")
 
 
 __all__ = ["Shape", "RectangleShape", "TriangleShape", "CircleShape", "create_shape"]

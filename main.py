@@ -3,7 +3,9 @@ from render import render_image, save_image
 import numpy as np
 import os
 
+
 def main():
+    """Fonction principale du programme."""
     # Dossier contenant les images
     image_dir = "images"  
     if not os.path.exists(image_dir):
@@ -57,20 +59,20 @@ def main():
         "circle": "Cercle"
     }
 
-    print("\n=== Shapes disponibles ===")
+    print("\n=== Formes disponibles ===")
     print("1. Rectangle")
     print("2. Triangle")
     print("3. Cercle")
     print("==========================\n")
 
-    # Demander à l'utilisateur de choisir une shape
+    # Demander à l'utilisateur de choisir une forme
     chosen_shape = "rectangle"
     while True:
         try:
-            shape_choice = input(f"Choisissez une shape (1-{len(shapes)}) : ")
+            shape_choice = input(f"Choisissez une forme (1-{len(shapes)}) : ")
             if shape_choice in shapes:
                 chosen_shape = shapes[shape_choice]
-                print(f"\nShape choisie : {shape_names[chosen_shape]}")
+                print(f"\nForme choisie : {shape_names[chosen_shape]}")
                 break
             else:
                 print(f"Veuillez entrer un nombre entre 1 et {len(shapes)}")

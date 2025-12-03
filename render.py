@@ -12,25 +12,15 @@ from shapes import create_shape
 
 
 def render_image(rects, width, height, shape="rectangle"):
-    """
-    Rend une image à partir d'une liste de rectangles de grille avec différentes shapes.
-    Les shapes se chevauchent pour recréer l'image originale.
-    
-    Args:
-        rects: Liste de dictionnaires contenant les rectangles avec leurs couleurs
-        width: Largeur de l'image finale
-        height: Hauteur de l'image finale
-        shape: Shape à utiliser ("rectangle", "triangle", "circle")
-    
-    Returns:
-        Image PIL RGB
-    """
+    """Rend une image à partir d'une liste de rectangles de grille avec différentes formes."""
     if not rects:
         return Image.new("RGB", (width, height), (0, 0, 0))
 
+    # Calcul des dimensions de la grille
     grid_rows = max(r["row"] for r in rects) + 1
     grid_cols = max(r["col"] for r in rects) + 1
 
+    # Calcul des largeurs de colonnes et hauteurs de lignes
     col_widths = [0] * grid_cols
     row_heights = [0] * grid_rows
     for r in rects:
@@ -43,6 +33,7 @@ def render_image(rects, width, height, shape="rectangle"):
         if rh > row_heights[rr]:
             row_heights[rr] = rh
 
+    # Calcul des offsets pour positionner les cellules
     x_offsets = [0] * (grid_cols + 1)
     y_offsets = [0] * (grid_rows + 1)
     for i in range(grid_cols):
@@ -50,11 +41,13 @@ def render_image(rects, width, height, shape="rectangle"):
     for j in range(grid_rows):
         y_offsets[j + 1] = y_offsets[j] + row_heights[j]
 
+    # Initialisation du canvas et de la carte de poids
     canvas = np.zeros((height, width, 3), dtype=np.float32)
     weight_map = np.zeros((height, width), dtype=np.float32)
     
     shape_obj = create_shape(shape)
 
+    # Application de chaque formes sur le canvas
     for r in rects:
         row = r["row"]
         col = r["col"]
@@ -67,17 +60,20 @@ def render_image(rects, width, height, shape="rectangle"):
         if right <= left or bottom <= top:
             continue
         
+        # Calcul du centre et des dimensions de la cellule
         center_x = (left + right) / 2.0
         center_y = (top + bottom) / 2.0
         cell_w = right - left
         cell_h = bottom - top
         
+        # Création du masque et application de la couleur
         mask = shape_obj.create_mask(width, height, center_x, center_y, cell_w, cell_h, row)
         
         for c in range(3):
             canvas[:, :, c] += mask * color[c]
         weight_map += mask
 
+    # Normalisation pour gérer les chevauchements
     weight_map = np.maximum(weight_map, 1e-6)
     for c in range(3):
         canvas[:, :, c] /= weight_map
