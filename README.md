@@ -35,6 +35,8 @@ pip install Pillow numpy
   - **Rectangles**
   - **Triangles**
   - **Cercles**
+  - **Losange**
+  - **Etoile**
 - Filtre noir et blanc (niveau de gris) applicable a l'image source.
 - Choix du nombre de formes à utiliser :
   - Nombre spécifique (ex: 100, 5, 50)
@@ -78,12 +80,13 @@ python3 main.py
 ## ⚙️ Fonctionnement
 
 1. L'image est découpée en une grille
-2. Chaque cellule fournit sa couleur moyenne
-3. Une shape est générée selon la shape choisie
-4. Le filtre noir et blanc est appliqué a l'image source
-5. Les shapes sont fusionnées via un masque (PIL + NumPy)
-6. L'image finale est normalisée et exportée
-7. La MSE est calculée
+2. Le filtre noir et blanc est appliqué a l'image source
+3. Chaque cellule fournit sa couleur moyenne
+4. Une shape est générée selon la shape choisie
+5. Le filtre noir et blanc est appliqué a l'image source
+6. Les shapes sont fusionnées via un masque (PIL + NumPy)
+7. L'image finale est normalisée et exportée
+8. La MSE est calculée
 
 ## 📚 Détails du code
 
