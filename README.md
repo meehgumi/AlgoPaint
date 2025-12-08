@@ -7,7 +7,7 @@ Chaque shape prend la couleur moyenne d'une cellule de l'image originale, créan
 
 ```
 AlgoPaint/
-├── shapes.py              → classes abstraites + implémentations (Rectangle, Triangle, Circle)
+├── shapes.py              → classes abstraites + implémentations (Rectangle, Triangle, Circle, Losange, Etoile)
 ├── image_processor.py     → analyse d'image, grille, couleurs, MSE
 ├── render.py              → reconstruction finale à partir des shapes
 ├── main.py                → interface console + logique principale
@@ -35,6 +35,7 @@ pip install Pillow numpy
   - **Rectangles**
   - **Triangles**
   - **Cercles**
+- Filtre noir et blanc (niveau de gris) applicable a l'image source.
 - Choix du nombre de formes à utiliser :
   - Nombre spécifique (ex: 100, 5, 50)
   - Mode automatique (grille 16×16 = 256 formes)
@@ -62,6 +63,9 @@ python3 main.py
    - `1` = Rectangle
    - `2` = Triangle
    - `3` = Cercle
+   - `4` = Losange
+   - `5` = Etoile
+   
 4. **Choisir le nombre de formes** :
    - Entrer un nombre (ex: `100`, `5`, `50`) pour un nombre spécifique
    - Entrer `auto` pour utiliser la grille automatique (16×16 = 256 formes)
@@ -90,6 +94,7 @@ python3 main.py
 ### `image_processor.py`
 - Chargement d'image (`load_image_to_array`)
 - Découpage en grille (`image_to_color_rects`)
+- Application du filtre Noir et Blanc (`apply_grayscale`)
 - Calcul des couleurs moyennes
 - Calcul de l'erreur MSE (`compute_mse`)
 - Définition dynamique de la grille (`_compute_grid_from_limit`) :
