@@ -57,16 +57,17 @@ python3 main.py
 ### Le programme vous guide pour :
 
 1. **Choisir une image** dans le dossier `images/`
-2. **Choisir une shape** :
+2. **Choix du filtre noir et blanc**
+3. **Choisir une shape** :
    - `1` = Rectangle
    - `2` = Triangle
    - `3` = Cercle
-3. **Choisir le nombre de formes** :
+4. **Choisir le nombre de formes** :
    - Entrer un nombre (ex: `100`, `5`, `50`) pour un nombre spécifique
    - Entrer `auto` pour utiliser la grille automatique (16×16 = 256 formes)
-4. **Générer une reconstruction** basée sur les couleurs moyennes
-5. **Sauvegarder le résultat** automatiquement dans `resultat/sortie.png`
-6. **Afficher la MSE** entre l'image originale et la reconstruction
+5. **Générer une reconstruction** basée sur les couleurs moyennes
+6. **Sauvegarder le résultat** automatiquement dans `resultat/sortie.png`
+7. **Afficher la MSE** entre l'image originale et la reconstruction
 
 **Note :** Le programme affiche le nombre réel de formes générées. Si vous demandez un nombre qui ne peut pas être exactement atteint (ex: 7), le programme utilisera la combinaison la plus proche possible (ex: 6 formes).
 
@@ -75,9 +76,10 @@ python3 main.py
 1. L'image est découpée en une grille
 2. Chaque cellule fournit sa couleur moyenne
 3. Une shape est générée selon la shape choisie
-4. Les shapes sont fusionnées via un masque (PIL + NumPy)
-5. L'image finale est normalisée et exportée
-6. La MSE est calculée
+4. Le filtre noir et blanc est appliqué a l'image source
+5. Les shapes sont fusionnées via un masque (PIL + NumPy)
+6. L'image finale est normalisée et exportée
+7. La MSE est calculée
 
 ## 📚 Détails du code
 
@@ -85,7 +87,6 @@ python3 main.py
 - Classe abstraite `Shape`
 - Classes `RectangleShape`, `TriangleShape`, `CircleShape`
 - Factory `create_shape()` pour instancier les shapes
-
 ### `image_processor.py`
 - Chargement d'image (`load_image_to_array`)
 - Découpage en grille (`image_to_color_rects`)

@@ -27,6 +27,12 @@ def load_image_to_array(path):
         img = im.convert("RGB")
     return np.array(img, dtype=np.uint8)
 
+def apply_grayscale(np_array):
+    """Applique le filtre Noir et Blanc."""
+    img = Image.fromarray(np_array, mode="RGB")
+    grayscale_img = img.convert("L").convert("RGB")
+    return np.array(grayscale_img, dtype=np.uint8)
+
 
 def _compute_grid_from_limit(max_rectangles, width, height):
     """Calcule les dimensions de la grille en fonction du nombre max de rectangles."""
@@ -78,13 +84,16 @@ def _compute_grid_from_limit(max_rectangles, width, height):
     return best_cols, best_rows
 
 
-def image_to_color_rects(path, grid_cols=16, grid_rows=16, max_rectangles=None):
+def image_to_color_rects(path, grid_cols=16, grid_rows=16, max_rectangles=None, src_img=None):
     """Découpe une image en grille et retourne la couleur moyenne de chaque cellule."""
     if grid_cols <= 0 or grid_rows <= 0:
         raise ValueError("grid_cols et grid_rows doivent être > 0")
-
-    with Image.open(path) as im:
-        img = im.convert("RGB")
+    
+    if src_img is not None:
+        img = Image.fromarray(src_img,mode="RGB")
+    else:
+        with Image.open(path) as im:
+            img = im.convert("RGB")
 
     width, height = img.size
     # Calcul automatique de la grille si max_rectangles est spécifié
@@ -128,6 +137,7 @@ def compute_mse(a, b):
 
 __all__ = [
     "load_image_to_array",
+    "apply_grayscale"
     "image_to_color_rects",
     "compute_mse",
 ]
