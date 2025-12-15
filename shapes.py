@@ -174,7 +174,7 @@ class CircleShape(Shape):
 class DiamondShape(Shape):
     """Forme losange (polygone à 4 points)."""
 
-    def __init__(self, size_multiplier: float = 1.8):
+    def __init__(self, size_multiplier: float = 3):
         self.size_multiplier = size_multiplier
 
     def create_mask(
@@ -221,7 +221,7 @@ class DiamondShape(Shape):
 class StarShape(Shape):
     """Forme d'étoile à cinq branches."""
 
-    def __init__(self, size_multiplier: float = 1.6, points: int = 5):
+    def __init__(self, size_multiplier: float = 3.5, points: int = 5):
         self.size_multiplier = size_multiplier
         self.points = points
 
@@ -266,7 +266,7 @@ class StarShape(Shape):
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> "StarShape":
-        return cls(size_multiplier=d.get("size_multiplier", 1.6), points=d.get("points", 5))
+        return cls(size_multiplier=d.get("size_multiplier", 3.5), points=d.get("points", 5))
 
 
 def create_shape(shape_type: str) -> Shape:
