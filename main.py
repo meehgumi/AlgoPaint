@@ -1,8 +1,28 @@
+import matplotlib.pyplot as plt
 from image_processor import image_to_color_rects, load_image_to_array, compute_mse, apply_grayscale
 from render import render_image, save_image
 import numpy as np
 import os
 
+def display_side_by_side(original_img_array, result_img_array, mse_score):
+    """Affiche l'image originale et le résultat côte à côte avec le score MSE."""
+    
+    # Créer une figure avec 1 ligne et 2 colonnes
+    fig, axes = plt.subplots(1, 2, figsize=(15, 7))
+    
+    # 1. Afficher l'image originale
+    axes[0].imshow(original_img_array)
+    axes[0].set_title('Image Originale')
+    axes[0].axis('off')  # Masquer les axes (plus propre)
+    
+    # 2. Afficher l'image du résultat
+    axes[1].imshow(result_img_array)
+    axes[1].set_title(f'Résultat de Reconstruction\n(MSE: {mse_score:.4f})')
+    axes[1].axis('off')
+    
+    # Afficher la fenêtre
+    plt.tight_layout()
+    plt.show()
 
 def main():
     """Fonction principale du programme."""
@@ -140,6 +160,7 @@ def main():
     mse = compute_mse(src, np.array(img_out))
     print("Image enregistrée :", output_path)
     print("MSE :", mse)
+    display_side_by_side(src, np.array(img_out), mse)
 
 if __name__ == "__main__":
     main()

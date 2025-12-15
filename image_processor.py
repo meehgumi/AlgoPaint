@@ -137,7 +137,7 @@ def compute_mse(a, b):
 
 __all__ = [
     "load_image_to_array",
-    "apply_grayscale"
+    "apply_grayscale",
     "image_to_color_rects",
     "compute_mse",
 ]
