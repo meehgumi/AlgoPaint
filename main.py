@@ -23,7 +23,7 @@ def display_side_by_side(original_img_array, result_img_array, mse_score):
     # Afficher la fenêtre
     plt.tight_layout()
     plt.show()
-
+    
 def main():
     """Fonction principale du programme."""
     # Dossier contenant les images

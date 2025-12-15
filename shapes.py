@@ -174,7 +174,7 @@ class CircleShape(Shape):
 class DiamondShape(Shape):
     """Forme losange (polygone à 4 points)."""
 
-    def __init__(self, size_multiplier: float = 1.8):
+    def __init__(self, size_multiplier: float = 2.1):
         self.size_multiplier = size_multiplier
 
     def create_mask(
@@ -221,7 +221,7 @@ class DiamondShape(Shape):
 class StarShape(Shape):
     """Forme d'étoile à cinq branches."""
 
-    def __init__(self, size_multiplier: float = 1.6, points: int = 5):
+    def __init__(self, size_multiplier: float = 3.5, points: int = 5):
         self.size_multiplier = size_multiplier
         self.points = points
 
@@ -240,7 +240,7 @@ class StarShape(Shape):
         shape_draw = ImageDraw.Draw(shape_img)
 
         # Le rayon extérieur de l'étoile
-        outer_radius = max(cell_w, cell_h) * self.size_multiplier / 2.0
+        outer_radius = max(cell_w, cell_h) * self.size_multiplier / 2
         # Le rayon intérieur (pointes intérieures de l'étoile), généralement environ 40% du rayon extérieur
         inner_radius = outer_radius * 0.4
 

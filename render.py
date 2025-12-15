@@ -41,6 +41,11 @@ def render_image(rects, width, height, shape="rectangle"):
     for j in range(grid_rows):
         y_offsets[j + 1] = y_offsets[j] + row_heights[j]
 
+    #Calcul des largeurs et hauteurs standard de la grille
+    standard_cell_w = col_widths[0]
+    standard_cell_h = row_heights[0]
+    
+    
     # Initialisation du canvas et de la carte de poids
     canvas = np.zeros((height, width, 3), dtype=np.float32)
     weight_map = np.zeros((height, width), dtype=np.float32)
@@ -67,7 +72,7 @@ def render_image(rects, width, height, shape="rectangle"):
         cell_h = bottom - top
         
         # Création du masque et application de la couleur
-        mask = shape_obj.create_mask(width, height, center_x, center_y, cell_w, cell_h, row)
+        mask = shape_obj.create_mask(width, height, center_x, center_y, standard_cell_w, standard_cell_h, row)
         
         for c in range(3):
             canvas[:, :, c] += mask * color[c]
