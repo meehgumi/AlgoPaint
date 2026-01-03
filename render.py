@@ -10,6 +10,16 @@ except Exception as exc:
 import numpy as np
 from shapes import create_shape
 
+# Import tqdm pour la barre de progression (avec fallback si non installé)
+try:
+    from tqdm import tqdm
+except ImportError:
+    # Fallback simple si tqdm n'est pas installé
+    def tqdm(iterable, desc=None, total=None):
+        if desc:
+            print(f"{desc}...")
+        return iterable
+
 
 def render_image(rects, width, height, shape="rectangle"):
     """Rend une image à partir d'une liste de rectangles de grille avec différentes formes."""
@@ -47,8 +57,9 @@ def render_image(rects, width, height, shape="rectangle"):
     
     shape_obj = create_shape(shape)
 
-    # Application de chaque formes sur le canvas
-    for r in rects:
+    # Application de chaque formes sur le canvas avec barre de progression
+    print(f"\nCréation de l'image avec {len(rects)} formes...")
+    for r in tqdm(rects, desc="Rendu en cours", total=len(rects)):
         row = r["row"]
         col = r["col"]
         color = np.array(r["color"], dtype=np.float32)

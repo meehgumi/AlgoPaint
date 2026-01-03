@@ -8,6 +8,16 @@ except Exception as exc:
 import numpy as np
 import math
 
+# Import tqdm pour la barre de progression (avec fallback si non installé)
+try:
+    from tqdm import tqdm
+except ImportError:
+    # Fallback simple si tqdm n'est pas installé
+    def tqdm(iterable, desc=None, total=None):
+        if desc:
+            print(f"{desc}...")
+        return iterable
+
 
 def _average_color(region):
     """Calcule la couleur moyenne d'une région d'image."""
@@ -104,25 +114,27 @@ def image_to_color_rects(path, grid_cols=16, grid_rows=16, max_rectangles=None, 
     cell_h = max(1, height // grid_rows)
 
     rects = []
-    for r in range(grid_rows):
-        for c in range(grid_cols):
-            # Calcul des coordonnées de la cellule
-            left = c * cell_w
-            top = r * cell_h
-            right = width if c == grid_cols - 1 else (c + 1) * cell_w
-            bottom = height if r == grid_rows - 1 else (r + 1) * cell_h
-            # Extraction de la région et calcul de la couleur moyenne
-            region = img.crop((left, top, right, bottom))
-            color = _average_color(region)
-            rects.append(
-                {
-                    "row": r,
-                    "col": c,
-                    "color": color,
-                    "cell_width": right - left,
-                    "cell_height": bottom - top,
-                }
-            )
+    total_cells = grid_rows * grid_cols
+    # Créer un générateur pour parcourir toutes les cellules
+    cells = [(r, c) for r in range(grid_rows) for c in range(grid_cols)]
+    for r, c in tqdm(cells, desc="Analyse de l'image", total=total_cells):
+        # Calcul des coordonnées de la cellule
+        left = c * cell_w
+        top = r * cell_h
+        right = width if c == grid_cols - 1 else (c + 1) * cell_w
+        bottom = height if r == grid_rows - 1 else (r + 1) * cell_h
+        # Extraction de la région et calcul de la couleur moyenne
+        region = img.crop((left, top, right, bottom))
+        color = _average_color(region)
+        rects.append(
+            {
+                "row": r,
+                "col": c,
+                "color": color,
+                "cell_width": right - left,
+                "cell_height": bottom - top,
+            }
+        )
 
     return rects
 
