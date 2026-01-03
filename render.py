@@ -10,7 +10,7 @@ except Exception as exc:
 import numpy as np
 from shapes import create_shape
 
-# Import tqdm pour la barre de progression (avec fallback si non installé)
+# Import tqdm pour la barre de progression
 try:
     from tqdm import tqdm
 except ImportError:
