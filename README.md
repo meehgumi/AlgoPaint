@@ -41,6 +41,7 @@ pip install Pillow numpy tqdm
 - Choix du nombre de formes à utiliser :
   - Nombre spécifique (ex: 100, 5, 50)
   - Mode automatique (grille 16×16 = 256 formes)
+  - **Limite technique : 3500 formes maximum** pour éviter les bugs de rendu
 - Découpage en grille adaptatif selon le nombre choisi
 - Calcul automatique de la couleur moyenne par cellule
 - Fusion des shapes avec PIL et NumPy
@@ -72,6 +73,7 @@ python3 main.py
 4. **Choisir le nombre de formes** :
    - Entrer un nombre (ex: `100`, `5`, `50`) pour un nombre spécifique
    - Entrer `auto` pour utiliser la grille automatique (16×16 = 256 formes)
+   - **Limite maximum : 3500 formes** (pour éviter les bugs de rendu)
 5. **Suivre la progression** : des barres de progression s'affichent pendant :
    - L'analyse de l'image (génération de la grille)
    - Le rendu des formes
@@ -79,7 +81,9 @@ python3 main.py
 7. **Sauvegarder le résultat** automatiquement dans `resultat/sortie.png`
 8. **Afficher la MSE** entre l'image originale et la reconstruction
 
-**Note :** Le programme affiche le nombre réel de formes générées. Si vous demandez un nombre qui ne peut pas être exactement atteint (ex: 7), le programme utilisera la combinaison la plus proche possible (ex: 6 formes).
+**Notes importantes :**
+- Le programme affiche le nombre réel de formes générées. Si vous demandez un nombre qui ne peut pas être exactement atteint (ex: 7), le programme utilisera la combinaison la plus proche possible (ex: 6 formes).
+- **Limite technique :** Le nombre de formes est limité à **3500 maximum** pour toutes les images, afin d'éviter les bugs de rendu causés par trop de chevauchements de masques.
 
 ## ⚙️ Fonctionnement
 

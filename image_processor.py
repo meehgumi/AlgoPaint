@@ -117,7 +117,7 @@ def image_to_color_rects(path, grid_cols=16, grid_rows=16, max_rectangles=None, 
     total_cells = grid_rows * grid_cols
     # Créer un générateur pour parcourir toutes les cellules
     cells = [(r, c) for r in range(grid_rows) for c in range(grid_cols)]
-    for r, c in tqdm(cells, desc="Analyse de l'image", total=total_cells):
+    for r, c in tqdm(cells, desc="Analyse de l'image", total=total_cells, unit="cellule", ncols=100):
         # Calcul des coordonnées de la cellule
         left = c * cell_w
         top = r * cell_h

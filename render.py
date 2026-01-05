@@ -59,7 +59,7 @@ def render_image(rects, width, height, shape="rectangle"):
 
     # Application de chaque formes sur le canvas avec barre de progression
     print(f"\nCréation de l'image avec {len(rects)} formes...")
-    for r in tqdm(rects, desc="Rendu en cours", total=len(rects)):
+    for r in tqdm(rects, desc="Rendu en cours", total=len(rects), unit="forme", ncols=100):
         row = r["row"]
         col = r["col"]
         color = np.array(r["color"], dtype=np.float32)

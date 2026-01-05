@@ -26,6 +26,9 @@ def display_side_by_side(original_img_array, result_img_array, mse_score):
 
 def main():
     """Fonction principale du programme."""
+    # Limite technique pour éviter les bugs de rendu (trop de formes = problèmes de normalisation)
+    MAX_SAFE_SHAPES = 3500
+    
     # Dossier contenant les images
     image_dir = "images"  
     if not os.path.exists(image_dir):
@@ -69,11 +72,22 @@ def main():
     src = load_image_to_array(src_path)
 
     # Choix du filtre
-    print("\n Options de Filtre")
-    filter_choice = input("Appliquer le filtre Noir et Blanc ? (y/n) : ").strip().lower()
-    if filter_choice == 'y': 
-        src = apply_grayscale(src)
-        print("Filtre Noir et Blanc appliqué.")
+    print("\n=== Options de Filtre ===")
+    while True:
+        try:
+            filter_choice = input("Appliquer le filtre Noir et Blanc ? (y/n) : ").strip().lower()
+            if filter_choice == 'y':
+                src = apply_grayscale(src)
+                print("Filtre Noir et Blanc appliqué.")
+                break
+            elif filter_choice == 'n':
+                print("Filtre Noir et Blanc non appliqué.")
+                break
+            else:
+                print("Veuillez entrer 'y' pour oui ou 'n' pour non")
+        except KeyboardInterrupt:
+            print("\nOpération annulée.")
+            return
 
     # Proposer des shapes disponibles
     shapes = {
@@ -115,9 +129,15 @@ def main():
             print("\nOpération annulée.")
             return
 
+    # Calculer la limite max pour éviter les bugs de rendu
+    h, w, _ = src.shape
+    max_possible = MAX_SAFE_SHAPES  # Limite fixe de 3500 formes pour toutes les images
+    
     # Demander le nombre de formes à utiliser
     print("\n=== Nombre de formes ===")
-    print("Entrez un nombre (ex: 100, 5) ou 'auto' pour le calcul automatique")
+    print(f"Entrez un nombre (ex: 100, 5) ou 'auto' pour le calcul automatique")
+    print(f"Limite maximum : {max_possible} formes (taille de l'image: {w}x{h} pixels)")
+    print(f"⚠️  Limite technique appliquée : {MAX_SAFE_SHAPES} formes max pour éviter les bugs de rendu")
     print("==========================\n")
     
     max_rectangles = None
@@ -129,12 +149,22 @@ def main():
                 break
             else:
                 nb = int(nb_choice)
-                if nb > 0:
+                if nb <= 0:
+                    print("Veuillez entrer un nombre positif")
+                elif nb > max_possible:
+                    print(f"\n  Erreur : Le nombre demandé ({nb}) dépasse la limite maximum ({max_possible} formes)")
+                    print(f"La limite technique de {MAX_SAFE_SHAPES} formes évite les bugs de rendu")
+                    use_max = input(f"Utiliser la limite maximum ({max_possible}) ? (y/n) : ").strip().lower()
+                    if use_max == 'y':
+                        max_rectangles = max_possible
+                        print(f"\nNombre de formes choisi : {max_possible} (limite maximum)")
+                        break
+                    else:
+                        print("Veuillez entrer un nombre plus petit")
+                else:
                     max_rectangles = nb
                     print(f"\nNombre de formes choisi : {nb}")
                     break
-                else:
-                    print("Veuillez entrer un nombre positif")
         except ValueError:
             print("Veuillez entrer un nombre valide ou 'auto'")
         except KeyboardInterrupt:
@@ -148,8 +178,6 @@ def main():
     else:
         rects = image_to_color_rects(src_path, grid_cols=16, grid_rows=16, src_img=src)
         print(f"Grille générée : {len(rects)} formes (16x16)")
-    
-    h, w, _ = src.shape
 
     img_out = render_image(rects, w, h, shape=chosen_shape)
     output_dir = "resultat"
